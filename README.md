@@ -1,2 +1,2 @@
-# image-classification-of-road-signs
+# capstone-project-lhl
 Computer vision for classifying and detecting road signs in Alberta

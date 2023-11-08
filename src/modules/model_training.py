@@ -165,6 +165,6 @@ def training_the_model(n_epoch, train, test):
         epoch_acc_test[epoch] = acc_test
         epoch_learning_rate[epoch] = sched_lr
         
-    torch.save(model.module.state_dict(), '/home/sammie/Capstone Project/image-classification-of-road-signs/output/model_temp.pth')
+    torch.save(model.state_dict(), '/home/sammie/Capstone Project/image-classification-of-road-signs/output/model_temp.pth')
     
     return epoch_loss_train, epoch_acc_train, epoch_loss_test, epoch_acc_test
