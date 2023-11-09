@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 from torchvision import transforms
 import torchvision.models as models
 import torch.nn as nn
-import cv2
 from PIL import Image
 import numpy as np
 
@@ -14,10 +13,9 @@ def load_image(uploaded_file):
     st.image(uploaded_file)
     image = np.array(Image.open(uploaded_file))
     # Preprocess the image
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     transform = transforms.Compose([
         transforms.ToPILImage(),
-        transforms.Resize((256, 256)),
+        transforms.Resize((512, 512)),
         transforms.ToTensor(),
     ])
     
@@ -40,7 +38,7 @@ def predict(image, model, classes):
     fig, ax = plt.subplots()
     ax.imshow(image)
     # Annotate the image with prediction.
-    ax.text(7, 15, f"Pred: {pred_class_name}", color='purple', fontsize=12, weight='bold')
+    ax.text(7, 25, f"Pred: {pred_class_name}", color='red', fontsize=12, weight='bold')
     st.pyplot(fig)
 
 

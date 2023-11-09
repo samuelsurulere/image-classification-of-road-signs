@@ -19,7 +19,7 @@ def train_imshow(train, classes, batch_size):
         ax.imshow(images[i].permute(1, 2, 0)) 
         ax.title.set_text(' '.join('%5s' % classes[labels[i]]))
     plt.show()
-    plt.savefig(f"/home/sammie/Capstone Project/image-classification-of-road-signs/output/figures/train_samples.png")
+    plt.savefig("/home/sammie/Capstone Project/image-classification-of-road-signs/output/figures/train_samples.png", format='png')
 
 
 def test_imshow(test, classes, batch_size):
@@ -33,7 +33,7 @@ def test_imshow(test, classes, batch_size):
         ax.imshow(images[i].permute(1, 2, 0)) 
         ax.title.set_text(' '.join('%5s' % classes[labels[i]]))
     plt.show()
-    plt.savefig(f"/home/sammie/Capstone Project/image-classification-of-road-signs/output/figures/test_samples.png")
+    plt.savefig("/home/sammie/Capstone Project/image-classification-of-road-signs/output/figures/test_samples.png", format='png')
 
 
 def train_test_loss_function(n_epoch, epoch_loss_train, epoch_loss_test):
@@ -43,7 +43,7 @@ def train_test_loss_function(n_epoch, epoch_loss_train, epoch_loss_test):
     ax.set_title('Training/testing loss')
     plt.legend(handles=[train_loss, test_loss])
     plt.show()
-    plt.savefig(f"/home/sammie/Capstone Project/image-classification-of-road-signs/output/figures/loss.png")
+    plt.savefig("/home/sammie/Capstone Project/image-classification-of-road-signs/output/figures/loss.png", format='png')
 
 
 def train_test_accuracy(n_epoch, epoch_acc_train, epoch_acc_test):
@@ -53,7 +53,7 @@ def train_test_accuracy(n_epoch, epoch_acc_train, epoch_acc_test):
     ax.set_title('Training/testing accuracy')
     plt.legend(handles=[train_acc, test_acc])
     plt.show()
-    plt.savefig(f"/home/sammie/Capstone Project/image-classification-of-road-signs/output/figures/accuracy.png")
+    plt.savefig("/home/sammie/Capstone Project/image-classification-of-road-signs/output/figures/accuracy.png", format='png')
 
 
 def confusion_matrix_results(y, y_pred, classes):
@@ -65,7 +65,7 @@ def confusion_matrix_results(y, y_pred, classes):
     plt.xlabel("Predicted Class")
     plt.tight_layout()
     plt.show()
-    plt.savefig(f"/home/sammie/Capstone Project/image-classification-of-road-signs/output/figures/confusion_matrix.png")
+    plt.savefig("/home/sammie/Capstone Project/image-classification-of-road-signs/output/figures/confusion_matrix.png", format='png')
 
 
 def model_classification_report(y, y_pred):

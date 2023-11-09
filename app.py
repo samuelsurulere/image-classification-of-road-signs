@@ -49,11 +49,13 @@ Other models were also used to compare performance and accuracy. The EfficientNe
 The methods used were as a result of the complexity of the defined problem and lack of data. The model was trained on a dataset of 13 classes of road signs.
 After training and retraining the model for extensive hours, the following benchmarks were achieved:
 
-**Accuracy:** **`87%`**
+**Accuracy:** **`86%`**
 
-**Model:** **`EfficientNetB3`**
+**Architecture:** **`EfficientNetB3`**
 
 **Trainable Parameters:** **`11,752,501`**
+
+**Parameters Size:** **`44.83MB`**
 """
 )
 
