@@ -2,6 +2,7 @@ import streamlit as st
 import utils
 import base64
 import warnings
+import torch
 
 warnings.filterwarnings("ignore")
     
