@@ -9,7 +9,7 @@ from PIL import Image
 import numpy as np
 
 @st.cache_data
-def load_image(uploaded_file):
+def load_image(uploaded_file, device):
     st.image(uploaded_file)
     image = np.array(Image.open(uploaded_file))
     # Preprocess the image
@@ -19,14 +19,14 @@ def load_image(uploaded_file):
         transforms.ToTensor(),
     ])
     
-    image = torch.unsqueeze(transform(image), 0)
+    image = torch.unsqueeze(transform(image), 0).to(device)
     return image
 
 
 @st.cache(allow_output_mutation=True, suppress_st_warning=True)
 def predict(image, model, classes):
     with torch.no_grad():
-        outputs = model(image.cpu())
+        outputs = model(image)
         prob_scores = F.softmax(outputs, dim=1)  # Convert logits to probabilities
         _, predicted_class = torch.max(prob_scores, 1)
         pred_class_name = classes[predicted_class.item()]
@@ -43,7 +43,7 @@ def predict(image, model, classes):
 
 
 @st.cache_data
-def load_model(model_path):
+def load_model(model_path, device):
     model = models.efficientnet_b3()
     model.classifier = nn.Sequential(
         # nn.BatchNorm1d(num_features=1536, momentum=0.95),
@@ -57,10 +57,11 @@ def load_model(model_path):
         nn.Linear(in_features=512, out_features=13),
         nn.Softmax(dim=-1)
     )    
-    if torch.cuda.is_available():
-        model = model.cuda()
-    else:
-        model = model.cpu()
+    model = model.to(device)
+    
     state_dict = torch.load(model_path)
     model.load_state_dict(state_dict, strict=False)
     return model
+    
+# Determine device (CPU or GPU)
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
