@@ -72,8 +72,8 @@ classes = ('bump','construction','divided-highway-begins',
 def main():
     uploaded_file = st.file_uploader(label='Insert image for classification', type=['png'])
     if uploaded_file:
-        image = utils.load_image(uploaded_file)
-        model = utils.load_model(model_path)
+        image = utils.load_image(uploaded_file, device)
+        model = utils.load_model(model_path, device)
         result = st.button('Predict the name of this road sign')
         if result:
             st.write('Right back at you in a jiffy...')
