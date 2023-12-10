@@ -8,7 +8,7 @@ This is my capstone project at Lighthouse Labs (Canada's leading coding bootcamp
 
 ## Project goals
 
-The goal of this project is to train a pretrained CNN model to classify road signs for Alberta province. The dataset for this unique problem is not readily available, so the one-shot learning technique was used to train models on a training dataset of 13 images (one for each class) and validation dataset of 78 images (6 for each class). Six random images were also selected for testing (images the model hasn't seen before). The total dataset has 95 images. This project is also an end-to-end project as it was deployed as a web app through the `Streamlit` library.
+The goal of this project is to train a pretrained CNN model to classify road signs for Alberta province. The dataset for this unique problem is not readily available, so the one-shot learning technique was used to train models on a training dataset of 13 images (one for each class) and validation dataset of 78 images (6 for each class). Six random images were also selected for testing (images the model hasn't seen before). The total dataset has 175 images (along with generated data augmentation training images). This project is also an end-to-end project as it was deployed as a web app through the `Streamlit` library. You can assess the deployed web app [here](https://roadsignsdetection.streamlit.app/)
 
 The categories of road signs that were used in this project are:
 1. bump
@@ -72,7 +72,7 @@ The highest accuracy that was obtained during the time frame of this project is 
     style="float: center; margin-right: px;" />
 
 
-- A demo of the deployed model on a web app through Streamlit is presented below:
+- A demo of the deployed model on a [web app](https://roadsignsdetection.streamlit.app/) using Streamlit library is presented below:
 
 <video width="640" height="300" controls>
   <source src="figures/streamlit-demo.mov" type="video/mp4">
