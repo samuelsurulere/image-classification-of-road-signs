@@ -26,7 +26,7 @@ def load_image(uploaded_file):
 @st.cache(allow_output_mutation=True, suppress_st_warning=True)
 def predict(image, model, classes):
     with torch.no_grad():
-        outputs = model(image.cuda())
+        outputs = model(image.cpu())
         prob_scores = F.softmax(outputs, dim=1)  # Convert logits to probabilities
         _, predicted_class = torch.max(prob_scores, 1)
         pred_class_name = classes[predicted_class.item()]
@@ -59,6 +59,8 @@ def load_model(model_path):
     )    
     if torch.cuda.is_available():
         model = model.cuda()
+    else:
+        model = model.cpu()
     state_dict = torch.load(model_path)
     model.load_state_dict(state_dict, strict=False)
     return model
