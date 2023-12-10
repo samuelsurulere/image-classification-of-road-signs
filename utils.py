@@ -62,6 +62,3 @@ def load_model(model_path, device):
     state_dict = torch.load(model_path)
     model.load_state_dict(state_dict, strict=False)
     return model
-    
-# Determine device (CPU or GPU)
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
