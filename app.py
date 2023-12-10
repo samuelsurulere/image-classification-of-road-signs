@@ -4,7 +4,9 @@ import base64
 import warnings
 
 warnings.filterwarnings("ignore")
-
+    
+# Determine device (CPU or GPU)
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def set_bg_hack(main_bg):
     '''
