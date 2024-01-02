@@ -40,6 +40,7 @@ def predict(image, model, classes):
     # Annotate the image with prediction.
     ax.text(7, 25, f"Pred: {pred_class_name}", color='red', fontsize=12, weight='bold')
     ax.axis(False)
+    plt.grid(False)
     st.pyplot(fig)
 
 
