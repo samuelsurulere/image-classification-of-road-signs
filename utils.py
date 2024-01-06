@@ -62,5 +62,6 @@ def load_model(model_path, device):
     model = model.to(device)
     
     state_dict = torch.load(model_path, map_location=device)
+    # state_dict = torch.load(model_path, map_location=torch.device("cpu"))
     model.load_state_dict(state_dict, strict=False)
     return model
