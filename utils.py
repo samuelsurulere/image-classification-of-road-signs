@@ -11,7 +11,7 @@ import numpy as np
 @st.cache_data
 def load_image(uploaded_file, device):
     st.image(uploaded_file)
-    image = np.array(Image.open(uploaded_file))
+    image = np.array(Image.open(uploaded_file).convert(RGB))
     # Preprocess the image
     transform = transforms.Compose([
         transforms.ToPILImage(),
