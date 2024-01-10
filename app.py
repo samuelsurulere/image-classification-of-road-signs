@@ -71,8 +71,8 @@ classes = (
         'construction','divided-highway-begins','handicap',
         'keep-right','no-entry','no-parking-either-side',
         'no-u-turn','pedestrian-crossing','people-working',
-        'playground-zone','railway-crossing','shared-use',
-        'speed-limit-80','stop','yield'
+        'playground-zone','railway-crossing','speed-limit-80',
+        'stop','yield'
     )
 
 
