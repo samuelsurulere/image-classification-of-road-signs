@@ -44,7 +44,9 @@ def annotated_predictions(image_dir, model, classes):
         fig, ax = plt.subplots()
         ax.imshow(image)
         # Annotate the image with ground truth.
-        ax.text(7, 15, f"GT: {gt_class_name}", color='purple', fontsize=12, weight='bold')
+        ax.text(7, 15, f"GT: {gt_class_name}", color='blue', fontsize=11, weight='bold')
         # Annotate the image with prediction.
-        ax.text(7, 32, f"Pred: {pred_class_name}", color='red', fontsize=12, weight='bold')
+        ax.text(7, 32, f"Pred: {pred_class_name}, {100*prob_scores.max():.1f}%", color='red', fontsize=11, weight='bold')
+        plt.axis('off')
+        plt.grid(False)
         plt.show()

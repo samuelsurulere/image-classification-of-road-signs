@@ -12,6 +12,8 @@ def model_predictions(test, model, criterion):
     y = []
     y_pred = []
     
+    # model.eval()
+    
     with torch.no_grad():
         for data in test:
             images, labels = data

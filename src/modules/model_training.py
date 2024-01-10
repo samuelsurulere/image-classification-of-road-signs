@@ -3,12 +3,10 @@ import torchvision.models as models
 from torchvision.models._api import WeightsEnum
 from torch.hub import load_state_dict_from_url
 import torch.nn as nn
-import torch.nn.functional as F
 import torch.optim as optim
 import torch
 import numpy as np
-
-
+# from tqdm import tqdm
 
 # This function is necessary for efficientnet_b3 not to raise an exception
 def get_state_dict(self, *args, **kwargs):
@@ -16,18 +14,18 @@ def get_state_dict(self, *args, **kwargs):
     return load_state_dict_from_url(self.url, *args, **kwargs)
 WeightsEnum.get_state_dict = get_state_dict
 
-# Freezing backbone and/or using maximum pooling during training
-freeze_backbone = False
-use_max_pooling = False
 
-# Defining particular model to be used during training. If using RestNet, the normalization transformation 
-# in data_preprocessing must be commented for maximum accuracy.
+# Defining particular model to be used during training. 
 
-model = models.efficientnet_b3(weights=models.EfficientNet_B3_Weights.IMAGENET1K_V1)
+model = models.efficientnet_b3(weights=models.EfficientNet_B3_Weights.DEFAULT)
 # model = models.vgg16(weights=models.VGG16_Weights.IMAGENET1K_V1)
 # model = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V1)
 
-if use_max_pooling:
+# Freezing backbone and/or using maximum pooling during training
+freeze_backbone = False
+use_avg_pooling = False
+
+if use_avg_pooling:
     maxpools = [k.split('.') for k, m in model.named_modules() if type(m).__name__ == 'AdaptiveAvgPool2d']
     for *parent, k in maxpools:
         setattr(model.get_submodule('.'.join(parent)),'avgpool', nn.AdaptiveMaxPool2d(output_size=1))
@@ -38,42 +36,53 @@ if freeze_backbone:
 
 # Fine tuning final layer of the CNN model
 model.classifier = nn.Sequential(
-    # nn.BatchNorm1d(num_features=1536, momentum=0.95),
     nn.Linear(in_features=1536, out_features=512),
     nn.ReLU(),
-    # nn.Dropout(0.3),
-    # nn.BatchNorm1d(num_features=512, momentum=0.95),
+    nn.Dropout(p=0.2),
     nn.Linear(in_features=512, out_features=512),
     nn.ReLU(),
-    # nn.Dropout(0.3),
-    nn.Linear(in_features=512, out_features=13),
-    nn.Softmax(dim=-1)
+    nn.Dropout(p=0.2),
+    nn.Linear(in_features=512, out_features=17)
 )
 
 # Learning rate of the model. Learning rate ratio and patience (used in the scheduler function).
-lr = 0.0005
+lr = 0.0003
 lr_ratio = 0.9
 patience = 10
 
 # loss function
 criterion = nn.CrossEntropyLoss()
-# optimizer function. Adam or SVD. L2 regularization can also be introduced
 
-optimizer = optim.Adam(model.parameters(), lr=lr) # , weight_decay=1e-5
-# optimizer = optim.SGD(model.parameters(), lr=lr, momentum=0.9)
+# optimizer function. Adam or SVD. L2 regularization can be introduced for Adam's optimizer
+
+optimizer = optim.Adam(
+                        params=model.parameters(), 
+                        lr=lr, 
+                        weight_decay=1e-2) # , weight_decay=1e-5
+# optimizer = optim.SGD(params=model.parameters(), lr=lr, momentum=0.9)
 
 # Scheduler function
-scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=patience, factor=lr_ratio)
+scheduler = optim.lr_scheduler.ReduceLROnPlateau(
+                                            optimizer, 
+                                            'max', 
+                                            patience=patience, 
+                                            factor=lr_ratio)
+
 
 # Checking for availability of CUDA (GPU)
-if torch.cuda.is_available(): # Checking if GPU is available on the laptop or desktop
+if torch.cuda.is_available():
     print("USING GPU")
     model = model.cuda()
     criterion = criterion.cuda()
+else:
+    print("USING CPU")
+    model = model.cpu()
+    criterion = criterion.cpu()
 
 
 # Function for validation of the model
 def test_epoch(test):
+    
     correct = 0
     total = 0
     k = 0
@@ -102,7 +111,6 @@ def test_epoch(test):
 def training_the_model(n_epoch, train, test):
     
     k = 0
-    Lp = 50
     kstep = 1
     
     epoch_loss_train = np.zeros(n_epoch)
@@ -111,14 +119,16 @@ def training_the_model(n_epoch, train, test):
     epoch_acc_test = np.zeros(n_epoch)
     epoch_learning_rate = np.zeros(n_epoch)
     
-    N_train_batch = len(train)
-    
-    
-    for epoch in range(n_epoch):  # loop over the dataset multiple times
+    # loop over the dataset multiple times
+    for epoch in range(n_epoch):  
+        
         running_loss = 0.0
         running_n = 0
         running_acc = 0.0
         
+        # model.train()
+        
+        # for i, data in tqdm(enumerate(train, 0), total=len(train)):
         for i, data in enumerate(train, 0):
             # get the inputs; data is a list of [inputs, labels]
             inputs, labels = data
@@ -137,17 +147,12 @@ def training_the_model(n_epoch, train, test):
             
             running_n += len(outputs)
             
-            labels_pred = np.argmax(outputs.cpu().detach().numpy(),axis=1)
+            labels_pred = np.argmax(outputs.cpu().detach().numpy(), axis=1)
             
             acc = np.sum(labels_pred == labels.detach().numpy())
-            # print statistics
+            
             running_loss += len(outputs)*loss.item()
             running_acc += acc
-            
-            p = int(Lp*((i+1)/N_train_batch))
-            s = ['#']*p + ['-']*(Lp - p)
-            s = "".join(s)
-            print(f'epoch: {epoch:04d} | [{s}] ({int(100*(i+1)/N_train_batch):02d}%)',end='\r')
             
             k += 1
             
@@ -157,7 +162,12 @@ def training_the_model(n_epoch, train, test):
         
         sched_lr = optimizer.param_groups[0]['lr']
         
-        print(f'epoch: {epoch:04d} | training loss = {running_loss/running_n:0.4f} | training accuracy = {100*running_acc/running_n:0.1f} | test loss = {loss_test:0.4f} | test accuracy = {acc_test:0.1f} | learning rate = {sched_lr}')
+        print(f'epoch: {epoch:04d} | '
+            f'training loss = {running_loss/running_n:0.4f} | '
+            f'training accuracy = {100*running_acc/running_n:0.1f} | '
+            f'test loss = {loss_test:0.4f} | '
+            f'test accuracy = {acc_test:0.1f} | '
+            f'learning rate = {sched_lr}')
         
         epoch_loss_train[epoch] = running_loss/running_n
         epoch_acc_train[epoch] = 100*running_acc/running_n
@@ -165,6 +175,6 @@ def training_the_model(n_epoch, train, test):
         epoch_acc_test[epoch] = acc_test
         epoch_learning_rate[epoch] = sched_lr
         
-    torch.save(model.state_dict(), '/home/sammie/Capstone Project/image-classification-of-road-signs/output/model_temp.pth')
+    torch.save(model.state_dict(), '../output/model_temp.pth')
     
     return epoch_loss_train, epoch_acc_train, epoch_loss_test, epoch_acc_test
